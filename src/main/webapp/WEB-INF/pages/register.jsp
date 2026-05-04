@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 <title>Register - Ticket Management System</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/main.css">
 </head>
@@ -32,32 +32,32 @@
 
                 <div class="input-group">
                     <input type="text" name="firstName" placeholder="First Name" required>
-                    <span class="input-icon">👤</span>
+                    
                 </div>
 
                 <div class="input-group">
                     <input type="text" name="lastName" placeholder="Last Name" required>
-                    <span class="input-icon">👤</span>
+                    
                 </div>
 
                 <div class="input-group">
                     <input type="email" name="email" placeholder="Email" required>
-                    <span class="input-icon">✉️</span>
+
                 </div>
 
                 <div class="input-group">
                     <input type="text" name="mobileNumber" placeholder="Mobile Number" required>
-                    <span class="input-icon">📞</span>
+                    
                 </div>
 
                 <div class="input-group">
                     <input type="password" name="password" placeholder="Password" required>
-                    <span class="input-icon">🔒</span>
+              
                 </div>
 
                 <div class="input-group">
                     <input type="password" name="confirmPassword" placeholder="Confirm Password" required>
-                    <span class="input-icon">🔐</span>
+                    
                 </div>
 
                 <button type="submit" class="auth-btn">Register</button>

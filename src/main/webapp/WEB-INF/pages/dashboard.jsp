@@ -7,7 +7,7 @@
 <title>Dashboard - TicketSewa</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" >
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" type="text/css"
@@ -64,16 +64,6 @@
                 <a href="#" class="btn btn-success">Get Help</a>
             </div>
 
-        </div>
-
-        <div class="dashboard-actions">
-            <a href="${pageContext.request.contextPath}/home" class="btn btn-secondary">
-                Go To Home
-            </a>
-
-            <a href="${pageContext.request.contextPath}/login" class="btn btn-primary">
-                Logout
-            </a>
         </div>
 
     </div>
