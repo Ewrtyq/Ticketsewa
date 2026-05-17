@@ -2000,3 +2000,119 @@ textarea {
         justify-content: flex-start;
     }
 }
+
+.admin-message {
+    padding: 14px 18px;
+    border-radius: 14px;
+    margin-bottom: 22px;
+    font-weight: 600;
+}
+
+.success-admin-message {
+    background: #dcfce7;
+    border: 1px solid #bbf7d0;
+    color: #166534;
+}
+
+.error-admin-message {
+    background: #fee2e2;
+    border: 1px solid #fecaca;
+    color: #991b1b;
+}
+
+.table-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.table-actions form {
+    display: inline;
+}
+
+.edit-btn,
+.unlock-btn,
+.delete-btn {
+    border: none;
+    padding: 8px 12px;
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.25s ease;
+    display: inline-block;
+}
+
+.edit-btn {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.edit-btn:hover {
+    background: #bfdbfe;
+}
+
+.unlock-btn {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.unlock-btn:hover {
+    background: #bbf7d0;
+}
+
+.delete-btn {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.delete-btn:hover {
+    background: #fecaca;
+}
+
+.admin-form-card {
+    max-width: 850px;
+    background: #ffffff;
+    border-radius: 22px;
+    padding: 34px;
+    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+    border: 1px solid #eef2f7;
+}
+
+.admin-form {
+    display: grid;
+    gap: 18px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+}
+
+.admin-submit-btn {
+    border: none;
+    background: #f97316;
+    color: #ffffff;
+    padding: 15px 22px;
+    border-radius: 14px;
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: 0.25s ease;
+}
+
+.admin-submit-btn:hover {
+    background: #ea580c;
+    transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-form-card {
+        padding: 24px;
+    }
+}

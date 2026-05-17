@@ -25,7 +25,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" type="text/css"
-      href="<%= request.getContextPath() %>/css/main.css?v=400000">
+      href="<%= request.getContextPath() %>/css/main.css?v=500000">
 </head>
 <body>
 
@@ -78,6 +78,15 @@
             <h2>Quick Actions</h2>
 
             <div class="admin-actions">
+
+                <a href="<%= request.getContextPath() %>/admin/users" class="admin-action-card">
+                    <span>👥</span>
+                    <div>
+                        <h3>Manage Users</h3>
+                        <p>Create, edit, delete, and unlock user accounts.</p>
+                    </div>
+                </a>
+
                 <a href="#" class="admin-action-card">
                     <span>🚌</span>
                     <div>
@@ -109,6 +118,7 @@
                         <p>Create and update discount offers.</p>
                     </div>
                 </a>
+
             </div>
         </div>
 
@@ -133,6 +143,11 @@
 
                 <div>
                     <span>Forgot Password</span>
+                    <strong>Enabled</strong>
+                </div>
+
+                <div>
+                    <span>User CRUD</span>
                     <strong>Enabled</strong>
                 </div>
             </div>
