@@ -4,7 +4,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Register - Ticket Management System</title>
+<title>Forgot Password - Ticket Management System</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,7 +19,7 @@
     <div class="auth-page">
         <div class="auth-card">
 
-            <h1 class="auth-title">Register</h1>
+            <h1 class="auth-title">Reset Password</h1>
 
             <% String error = (String) request.getAttribute("error"); %>
             <% String success = (String) request.getAttribute("success"); %>
@@ -32,37 +32,25 @@
                 <div class="message success-message"><%= success %></div>
             <% } %>
 
-            <form action="<%= request.getContextPath() %>/register" method="post" class="auth-form">
+            <form action="<%= request.getContextPath() %>/forgot-password" method="post" class="auth-form">
 
                 <div class="input-group">
-                    <input type="text" name="firstName" placeholder="First Name" required>
+                    <input type="email" name="email" placeholder="Enter your registered email" required>
                 </div>
 
                 <div class="input-group">
-                    <input type="text" name="lastName" placeholder="Last Name" required>
+                    <input type="password" name="newPassword" placeholder="New Password" required>
                 </div>
 
                 <div class="input-group">
-                    <input type="email" name="email" placeholder="Email" required>
+                    <input type="password" name="confirmPassword" placeholder="Confirm New Password" required>
                 </div>
 
-                <div class="input-group">
-                    <input type="text" name="mobileNumber" placeholder="Mobile Number" required>
-                </div>
-
-                <div class="input-group">
-                    <input type="password" name="password" placeholder="Password" required>
-                </div>
-
-                <div class="input-group">
-                    <input type="password" name="confirmPassword" placeholder="Confirm Password" required>
-                </div>
-
-                <button type="submit" class="auth-btn">Register</button>
+                <button type="submit" class="auth-btn">Reset Password</button>
             </form>
 
             <p class="auth-switch">
-                Already have an account?
+                Remember your password?
                 <a href="<%= request.getContextPath() %>/login">Login</a>
             </p>
 

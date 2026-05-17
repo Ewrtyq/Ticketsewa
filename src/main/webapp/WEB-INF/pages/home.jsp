@@ -8,21 +8,19 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" type="text/css"
-    href="${pageContext.request.contextPath}/css/main.css">
+      href="<%= request.getContextPath() %>/css/main.css?v=100000">
 </head>
 <body>
 
-<!-- HEADER -->
 <jsp:include page="includes/header.jsp" />
 
-<!-- HERO SECTION -->
 <section class="hero">
     <div class="hero-content">
 
-        <!-- LEFT TEXT -->
         <div class="hero-text">
             <h1>Book Your Journey With Ease</h1>
             <p>
@@ -31,18 +29,15 @@
             </p>
         </div>
 
-        <!-- RIGHT BOOKING CARD -->
         <div class="booking-card">
 
-            <!-- TABS -->
             <div class="booking-tabs">
-                <button class="tab active">Bus</button>
-                <button class="tab">Flight</button>
-                <button class="tab">Tour</button>
+                <button type="button" class="tab active">Bus</button>
+                <button type="button" class="tab">Flight</button>
+                <button type="button" class="tab">Tour</button>
             </div>
 
-            <!-- SEARCH FORM -->
-            <form action="${pageContext.request.contextPath}/search-results"
+            <form action="<%= request.getContextPath() %>/search-results"
                   method="get"
                   class="search-form">
 
@@ -75,9 +70,7 @@
                     <input type="date" name="travelDate" required>
                 </div>
 
-                <button type="submit" class="search-btn">
-                    Search Tickets
-                </button>
+                <button type="submit" class="search-btn">Search Tickets</button>
 
             </form>
         </div>
@@ -85,7 +78,6 @@
     </div>
 </section>
 
-<!-- FEATURES -->
 <section class="section">
     <div class="section-header">
         <h2>Why Choose TicketSewa?</h2>
@@ -115,7 +107,6 @@
     </div>
 </section>
 
-<!-- POPULAR ROUTES -->
 <section class="section routes-section">
     <div class="section-header">
         <h2>Popular Routes</h2>
@@ -132,7 +123,6 @@
     </div>
 </section>
 
-<!-- OFFERS -->
 <section class="section">
     <div class="section-header">
         <h2>Special Offers</h2>
@@ -145,27 +135,26 @@
             <div class="offer-badge">20% OFF</div>
             <h3>New User Discount</h3>
             <p>Register today and get up to 20% off on your first booking.</p>
-            <a href="${pageContext.request.contextPath}/register">Claim Offer →</a>
+            <a href="<%= request.getContextPath() %>/register">Claim Offer →</a>
         </div>
 
         <div class="offer-card">
             <div class="offer-badge">Cashback</div>
             <h3>Khalti Cashback</h3>
             <p>Pay using Khalti and receive cashback on selected routes.</p>
-            <a href="#">View Details →</a>
+            <a href="<%= request.getContextPath() %>/offers">View Details →</a>
         </div>
 
         <div class="offer-card">
             <div class="offer-badge">Festival Offer</div>
             <h3>Dashain Special</h3>
             <p>Special discounts available for Dashain and Tihar travel bookings.</p>
-            <a href="#">Explore →</a>
+            <a href="<%= request.getContextPath() %>/offers">Explore →</a>
         </div>
 
     </div>
 </section>
 
-<!-- STATS -->
 <section class="section">
     <div class="stats-grid">
 
@@ -192,7 +181,6 @@
     </div>
 </section>
 
-<!-- CTA -->
 <section class="section">
     <div class="cta-box">
         <div>
@@ -200,13 +188,12 @@
             <p>Book your next trip now and enjoy a hassle-free journey.</p>
         </div>
 
-        <a href="${pageContext.request.contextPath}/register" class="cta-btn">
+        <a href="<%= request.getContextPath() %>/register" class="cta-btn">
             Get Started
         </a>
     </div>
 </section>
 
-<!-- FOOTER -->
 <jsp:include page="includes/footer.jsp" />
 
 </body>

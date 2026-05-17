@@ -3,7 +3,8 @@ package com.ticketmanagement.dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.ticketmanagement.config.DBConfig;
 import com.ticketmanagement.model.User;
@@ -11,83 +12,262 @@ import com.ticketmanagement.model.User;
 public class UserDAO {
 
     public boolean registerUser(User user) {
-        String sql = "INSERT INTO users (first_name, last_name, email, mobile_number, password) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO users (first_name, last_name, email, mobile_number, password, role, failed_attempts, locked_until) "
+                   + "VALUES (?, ?, ?, ?, ?, 'USER', 0, NULL)";
 
-        try (Connection connection = DBConfig.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+        try (Connection conn = DBConfig.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            preparedStatement.setString(1, user.getFirstName());
-            preparedStatement.setString(2, user.getLastName());
-            preparedStatement.setString(3, user.getEmail());
-            preparedStatement.setString(4, user.getMobileNumber());
-            preparedStatement.setString(5, user.getPassword());
+            ps.setString(1, user.getFirstName());
+            ps.setString(2, user.getLastName());
+            ps.setString(3, user.getEmail());
+            ps.setString(4, user.getMobileNumber());
+            ps.setString(5, user.getPassword());
 
-            int rowsInserted = preparedStatement.executeUpdate();
-            System.out.println("Rows inserted: " + rowsInserted);
-            return rowsInserted > 0;
+            return ps.executeUpdate() > 0;
 
-        } catch (SQLException e) {
-            System.out.println("SQL Error in registerUser(): " + e.getMessage());
+        } catch (Exception e) {
             e.printStackTrace();
-            return false;
-        } catch (ClassNotFoundException e) {
-            System.out.println("Driver Error in registerUser(): " + e.getMessage());
-            e.printStackTrace();
-            return false;
         }
-    }
 
-    public boolean isEmailExists(String email) {
-        String sql = "SELECT id FROM users WHERE email = ?";
-
-        try (Connection connection = DBConfig.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-
-            preparedStatement.setString(1, email);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            return resultSet.next();
-
-        } catch (SQLException e) {
-            System.out.println("SQL Error in isEmailExists(): " + e.getMessage());
-            e.printStackTrace();
-            return false;
-        } catch (ClassNotFoundException e) {
-            System.out.println("Driver Error in isEmailExists(): " + e.getMessage());
-            e.printStackTrace();
-            return false;
-        }
+        return false;
     }
 
     public User loginUser(String email, String password) {
         String sql = "SELECT * FROM users WHERE email = ? AND password = ?";
 
-        try (Connection connection = DBConfig.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+        try (Connection conn = DBConfig.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            preparedStatement.setString(1, email);
-            preparedStatement.setString(2, password);
+            ps.setString(1, email);
+            ps.setString(2, password);
 
-            ResultSet resultSet = preparedStatement.executeQuery();
+            ResultSet rs = ps.executeQuery();
 
-            if (resultSet.next()) {
-                User user = new User();
-                user.setId(resultSet.getInt("id"));
-                user.setFirstName(resultSet.getString("first_name"));
-                user.setLastName(resultSet.getString("last_name"));
-                user.setEmail(resultSet.getString("email"));
-                user.setMobileNumber(resultSet.getString("mobile_number"));
-                user.setPassword(resultSet.getString("password"));
-                return user;
+            if (rs.next()) {
+                return mapUser(rs);
             }
 
-        } catch (SQLException e) {
-            System.out.println("SQL Error in loginUser(): " + e.getMessage());
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            System.out.println("Driver Error in loginUser(): " + e.getMessage());
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
         return null;
+    }
+
+    public boolean isEmailExists(String email) {
+        String sql = "SELECT email FROM users WHERE email = ?";
+
+        try (Connection conn = DBConfig.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, email);
+
+            ResultSet rs = ps.executeQuery();
+            return rs.next();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    public boolean isAccountLocked(String email) {
+        String sql = "SELECT locked_until FROM users WHERE email = ?";
+
+        try (Connection conn = DBConfig.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, email);
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                java.sql.Timestamp lockedUntil = rs.getTimestamp("locked_until");
+
+                if (lockedUntil == null) {
+                    return false;
+                }
+
+                long currentTime = System.currentTimeMillis();
+                long lockTime = lockedUntil.getTime();
+
+                if (lockTime > currentTime) {
+                    return true;
+                } else {
+                    resetFailedAttempts(email);
+                    return false;
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    public int increaseFailedAttempts(String email) {
+        String updateSql = "UPDATE users SET failed_attempts = failed_attempts + 1 WHERE email = ?";
+        String selectSql = "SELECT failed_attempts FROM users WHERE email = ?";
+
+        try (Connection conn = DBConfig.getConnection()) {
+
+            try (PreparedStatement updatePs = conn.prepareStatement(updateSql)) {
+                updatePs.setString(1, email);
+                updatePs.executeUpdate();
+            }
+
+            try (PreparedStatement selectPs = conn.prepareStatement(selectSql)) {
+                selectPs.setString(1, email);
+
+                ResultSet rs = selectPs.executeQuery();
+
+                if (rs.next()) {
+                    return rs.getInt("failed_attempts");
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
+
+    public boolean lockAccount(String email, int minutes) {
+        String sql = "UPDATE users SET locked_until = DATE_ADD(NOW(), INTERVAL ? MINUTE) WHERE email = ?";
+
+        try (Connection conn = DBConfig.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, minutes);
+            ps.setString(2, email);
+
+            return ps.executeUpdate() > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    public boolean resetFailedAttempts(String email) {
+        String sql = "UPDATE users SET failed_attempts = 0, locked_until = NULL WHERE email = ?";
+
+        try (Connection conn = DBConfig.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, email);
+
+            return ps.executeUpdate() > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    public boolean updatePasswordByEmail(String email, String newPassword) {
+        String sql = "UPDATE users SET password = ?, failed_attempts = 0, locked_until = NULL WHERE email = ?";
+
+        try (Connection conn = DBConfig.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, newPassword);
+            ps.setString(2, email);
+
+            return ps.executeUpdate() > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    public int countAllUsers() {
+        String sql = "SELECT COUNT(*) FROM users";
+        return getCount(sql);
+    }
+
+    public int countAdminUsers() {
+        String sql = "SELECT COUNT(*) FROM users WHERE role = 'ADMIN'";
+        return getCount(sql);
+    }
+
+    public int countNormalUsers() {
+        String sql = "SELECT COUNT(*) FROM users WHERE role = 'USER'";
+        return getCount(sql);
+    }
+
+    public int countLockedUsers() {
+        String sql = "SELECT COUNT(*) FROM users WHERE locked_until IS NOT NULL AND locked_until > NOW()";
+        return getCount(sql);
+    }
+
+    private int getCount(String sql) {
+        try (Connection conn = DBConfig.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
+
+    public List<User> getRecentUsers() {
+        List<User> users = new ArrayList<>();
+
+        String sql = "SELECT * FROM users ORDER BY id DESC LIMIT 10";
+
+        try (Connection conn = DBConfig.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                users.add(mapUser(rs));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return users;
+    }
+
+    private User mapUser(ResultSet rs) throws Exception {
+        String lockedUntil = null;
+        String createdAt = null;
+
+        if (rs.getTimestamp("locked_until") != null) {
+            lockedUntil = rs.getTimestamp("locked_until").toString();
+        }
+
+        if (rs.getTimestamp("created_at") != null) {
+            createdAt = rs.getTimestamp("created_at").toString();
+        }
+
+        return new User(
+                rs.getInt("id"),
+                rs.getString("first_name"),
+                rs.getString("last_name"),
+                rs.getString("email"),
+                rs.getString("mobile_number"),
+                rs.getString("password"),
+                rs.getString("role"),
+                rs.getInt("failed_attempts"),
+                lockedUntil,
+                createdAt
+        );
     }
 }
